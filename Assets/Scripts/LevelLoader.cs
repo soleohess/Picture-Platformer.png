@@ -7,7 +7,7 @@ public class ColorToPrefab {
 	public GameObject prefab;
 }
 
-public class LevelLoader : MonoBehaviour {
+public class LevelLoader : MonoBehaviour { // Test comment
 
 	public string levelFileName;
 
