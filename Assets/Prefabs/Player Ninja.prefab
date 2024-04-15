@@ -117,6 +117,7 @@ GameObject:
   - component: {fileID: 476504}
   - component: {fileID: 6161996}
   - component: {fileID: 5091820}
+  - component: {fileID: -523035875786748780}
   m_Layer: 0
   m_Name: Player Ninja
   m_TagString: Untagged
@@ -212,3 +213,15 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &-523035875786748780
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 180128}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 446fecf8eea324500bd3ac42024cf81c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
