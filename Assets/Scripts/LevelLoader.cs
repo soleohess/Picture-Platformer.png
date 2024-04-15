@@ -51,11 +51,11 @@ public class LevelLoader : MonoBehaviour { // Test comment
 		int width = levelMap.width;
 		int height = levelMap.height;
 
-		for (int x = 0; x < width; x++) {
-			for (int y = 0; y < height; y++) {
-
+		for (int x = 0; x < width; x++)
+		{
+			for (int y = 0; y < height; y++)
+			{
 				SpawnTileAt( allPixels[(y * width) + x], x, y );
-
 			}
 		}
 	}
