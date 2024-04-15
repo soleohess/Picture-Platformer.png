@@ -74,7 +74,10 @@ public class PlayerController : MonoBehaviour
     void Idle()
     {
         //idle code goes here
-
+        if (xdir !> 0)
+        {
+            SwitchState(States.idle);
+        }
 
 
         //one of the conditions for exiting idle state
@@ -83,6 +86,5 @@ public class PlayerController : MonoBehaviour
             SwitchState(States.walk);
         }
     }
-
 
 }
