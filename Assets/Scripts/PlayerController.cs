@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    enum States
+    enum States // controls are jump (space or W), left (arrow or A), and right (arrow or D);;
     {
         idle,
         walk,
@@ -21,28 +21,46 @@ public class PlayerController : MonoBehaviour
     private float originalSprintTimer; // can change to public for tweaking
     private float xdir;
     private float ydir;
+    private float xvector;
     
     // Start is called before the first frame update
     void Start()
     {
         state = States.idle;
-        originalSprintTimer = .5f;
-        walkSpeed = 1;
+        originalSprintTimer = 1000000000000f;
+        walkSpeed = 4;
         
     }
 
     // Update is called once per frame
     void Update()
     {
-        xdir = Input.GetAxis("Horizontal");
+        //xdir = Input.GetAxis("Horizontal");
+        xdir = ((99 * xdir) + Input.GetAxis("Horizontal"))/100;
         ydir = Input.GetAxis("Vertical");
+
+        switch (state)
+        {
+            case States.idle:
+                Idle();
+                break;
+            case States.walk:
+                Walk();
+                break;
+            case States.sprint:
+                Sprint();
+                break;
+            case States.slide:
+                Slide();
+                break;
+        }
     }
 
     // Update is called once per frame
 
    void SwitchToIdle()
    {
-       States.state = States.idle;
+       state = States.idle;
        //learn how animation yes
    }
    void Idle()
@@ -56,8 +74,8 @@ public class PlayerController : MonoBehaviour
 
    void SwitchToWalk()
    {
-       sprintTimer = originalSprintTimer;
-       States.state = States.walk;
+       sprintTimer = originalSprintTimer;//;
+       state = States.walk;
        //animation is yes
    }
 
@@ -66,57 +84,84 @@ public class PlayerController : MonoBehaviour
        xvector = xdir * walkSpeed * Time.deltaTime;
        transform.position = transform.position + new Vector3(xvector, 0, 0);
        sprintTimer -= Time.deltaTime;
-       if ((GetKeyDown.A or GetKeyDown.D or GetKeyDown.ArrowLeft or GetKeyDown.ArrowRight) && sprintTimer > 0)
+       if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) && sprintTimer > 0)
        {
            SwitchToSprint();
+       }
+       if (xdir == 0)
+       {
+           SwitchToIdle();
        }
    }
 
    void SwitchToSprint()
    {
-       xdir.sprint
+       //animaation hyeaaa
+       state = States.sprint;
    }
 
    void Sprint()
    {
-       
-   }
-   
-   //not using SwitchState but leaving for reconsideration later
-      /* void SwitchState(States state)
+       xvector = xdir * 2 * walkSpeed * Time.deltaTime;
+       transform.position = transform.position + new Vector3(xvector, 0, 0);
+
+       if (xdir == 0)
        {
-           switch (state)
-           {
-               case States.idle:
-                   print("idle state");
-                   Idle();
-                   break;
-   
-               case States.walk:
-                   print("walk state");
-                   break;
-   
-               case States.sprint:
-                   print("sprint state");
-                   break;
-   
-               case States.jump:
-                   print("jump state");
-                   break;
-   
-               case States.fall:
-                   print("fall state");
-                   break;
-   
-               case States.wallgrab:
-                   print("wallgrab state");
-                   break;
-   
-               case States.slide:
-                   print("slide state");
-                   break;
-   
-           }
+           SwitchToSlide();
        }
-       */
+   }
+
+   void SwitchToSlide()
+   {
+       //animaation
+       state = States.slide;
+   }
+
+   void Slide()
+   {
+       xvector *= 1 - (.01f * Time.deltaTime); // e?
+       transform.position = transform.position + new Vector3(xvector, 0, 0);
+       if (xvector <= 0.01f)
+       {
+           SwitchToIdle();
+       }
+   }
+
+   //not using SwitchState but leaving for reconsideration later
+   /* void SwitchState(States state)
+    {
+        switch (state)
+        {
+            case States.idle:
+                print("idle state");
+                Idle();
+                break;
+
+            case States.walk:
+                print("walk state");
+                break;
+
+            case States.sprint:
+                print("sprint state");
+                break;
+
+            case States.jump:
+                print("jump state");
+                break;
+
+            case States.fall:
+                print("fall state");
+                break;
+
+            case States.wallgrab:
+                print("wallgrab state");
+                break;
+
+            case States.slide:
+                print("slide state");
+                break;
+
+        }
+    }
+    */
 }
