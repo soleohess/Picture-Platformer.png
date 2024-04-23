@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 
 [System.Serializable]
@@ -17,8 +18,15 @@ public class LevelLoader : MonoBehaviour { // Test comment
 
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		LoadMap();
+		GameObject mainCamera = GameObject.FindWithTag("MainCamera");
+		//mainCamera.Start();
+	}
+
+	void Start()
+	{
+		
 	}
 
 	void EmptyMap() {

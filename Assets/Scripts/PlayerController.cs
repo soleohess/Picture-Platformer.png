@@ -22,14 +22,17 @@ public class PlayerController : MonoBehaviour
     private float xdir;
     private float ydir;
     private float xvector;
+    private float yvector;
+    public float forceAmount = 10f; // Jump Force
+    private Rigidbody2D rb; 
     
     // Start is called before the first frame update
     void Start()
     {
         state = States.idle;
-        originalSprintTimer = 1000000000000f;
+        originalSprintTimer = 1000f;
         walkSpeed = 4;
-        
+        rb = GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -54,10 +57,13 @@ public class PlayerController : MonoBehaviour
                 Slide();
                 break;
         }
+
+        if (Input.GetKeyDown("Space"))
+        {
+            SwitchToJump();
+        }
     }
-
-    // Update is called once per frame
-
+    
    void SwitchToIdle()
    {
        state = States.idle;
@@ -70,6 +76,12 @@ public class PlayerController : MonoBehaviour
         {
             SwitchToWalk();
         }
+        sprintTimer -= Time.deltaTime;
+        if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
+        {
+            SwitchToSprint();
+        }
+
     }
 
    void SwitchToWalk()
@@ -84,7 +96,7 @@ public class PlayerController : MonoBehaviour
        xvector = xdir * walkSpeed * Time.deltaTime;
        transform.position = transform.position + new Vector3(xvector, 0, 0);
        sprintTimer -= Time.deltaTime;
-       if ((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow)) && sprintTimer > 0)
+       if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
        {
            SwitchToSprint();
        }
@@ -127,6 +139,17 @@ public class PlayerController : MonoBehaviour
        }
    }
 
+   void SwitchToJump()
+   {
+       
+       state = States.jump;
+       //animaation
+   }
+
+   void Jump()
+   {
+       rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
+   }
    //not using SwitchState but leaving for reconsideration later
    /* void SwitchState(States state)
     {
