@@ -10,7 +10,7 @@ public class Camera : MonoBehaviour
     {
         GameObject player = GameObject.FindWithTag("Player");
         transform.SetParent(player.transform);
-        transform.position = new Vector3(4, 3, 0);
+        transform.position = new Vector3(4, 3, -10);
     }
 
     // Update is called once per frame

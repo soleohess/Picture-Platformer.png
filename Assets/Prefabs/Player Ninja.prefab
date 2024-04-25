@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 434206}
   - component: {fileID: 9526986}
   - component: {fileID: 21253814}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Visual
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 6161996}
   - component: {fileID: 5091820}
   - component: {fileID: -523035875786748780}
-  m_Layer: 0
+  m_Layer: 2
   m_Name: Player Ninja
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -198,10 +198,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 2
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -225,3 +225,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 446fecf8eea324500bd3ac42024cf81c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  forceAmount: 36
+  rb: {fileID: 5091820}
