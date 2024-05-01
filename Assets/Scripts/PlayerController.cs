@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Overlays;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
@@ -31,7 +32,7 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         state = States.idle;
-        originalSprintTimer = 100f;
+        originalSprintTimer = 1f;
         walkSpeed = 4;
         rb = GetComponent<Rigidbody2D>();
     }
@@ -60,12 +61,17 @@ public class PlayerController : MonoBehaviour
             case States.jump:
                 Jump();
                 break;
+            case States.fall:
+                Fall();
+                break;
         }
 
         if (Input.GetKeyDown("space"))
         {
             SwitchToJump();
         }
+        
+        Debug.Log("State is " + state.ToString());
     }
 
     void SwitchToIdle()
@@ -84,9 +90,11 @@ public class PlayerController : MonoBehaviour
         }
 
         sprintTimer -= Time.deltaTime;
+        Debug.Log("sprintTimer is " + sprintTimer.ToString());
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
+            Debug.Log("I want to sprint :(");
             SwitchToSprint();
         }
 
@@ -94,27 +102,36 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToWalk()
     {
-        Debug.Log("SwitchToWalk");
-        sprintTimer = originalSprintTimer; //;
-        state = States.walk;
-        //animation is yes
+        Debug.Log("SwitchToWalk")   ;
+        sprintTimer = originalSprintTimer              /*;*/        ;
+        state = States.walk;//;
+        //animaation is yes
     }
 
     void Walk()
     {
-        xvector = xdir * walkSpeed * Time.deltaTime;
-        transform.position = transform.position + new Vector3(xvector, 0, 0);
+        Move();
         sprintTimer -= Time.deltaTime;
+        Debug.Log("sprintTimer is " + sprintTimer.ToString());
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
+            Debug.Log("I want to sprint :(");
             SwitchToSprint();
         }
 
-        if (xdir == 0)
+        if (xdir < 0.001f && xdir > -0.001f)
         {
+            xdir = 0;
             SwitchToIdle();
         }
+    }
+
+    void Move()
+    {
+        xvector = xdir * walkSpeed * Time.deltaTime;
+        transform.position = transform.position + new Vector3(xvector, 0, 0);
+        
     }
 
     void SwitchToSprint()
@@ -126,11 +143,12 @@ public class PlayerController : MonoBehaviour
 
     void Sprint()
     {
-        xvector = xdir * 2 * walkSpeed * Time.deltaTime;
-        transform.position = transform.position + new Vector3(xvector, 0, 0);
+        Move();
+        Move();
 
-        if (xdir == 0)
+        if (xdir < 0.001f && xdir > -0.001f)
         {
+            xdir = 0;
             SwitchToSlide();
         }
     }
@@ -169,8 +187,7 @@ public class PlayerController : MonoBehaviour
         {
             SwitchToIdle();
         }
-        xvector = xdir * walkSpeed * Time.deltaTime;
-        transform.position = transform.position + new Vector3(xvector, 0, 0);
+        Move();
         //rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
         //animaation
     }
@@ -183,7 +200,7 @@ public class PlayerController : MonoBehaviour
 
     void Fall()
     {
-        
+        Move();
         //animaation
     }
     
