@@ -1,9 +1,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class ExitSign : MonoBehaviour
 {
+    public int nextscene;
     // Start is called before the first frame update
     void Start()
     {
@@ -14,5 +16,13 @@ public class ExitSign : MonoBehaviour
     void Update()
     {
         
+    }
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            nextscene++;
+            SceneManager.LoadScene(nextscene);
+        }
     }
 }

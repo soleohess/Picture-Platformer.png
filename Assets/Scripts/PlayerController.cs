@@ -27,14 +27,20 @@ public class PlayerController : MonoBehaviour
     public float forceAmount = 10f; // Jump Force
     [SerializeField] private Rigidbody2D rb;
     private bool canJump;
-
+    private Animator animate;
+    private SpriteRenderer renderer;
+    private GameObject visual;
     // Start is called before the first frame update
     void Start()
     {
+        visual = transform.GetChild(0).gameObject;
+        animate = visual.GetComponent<Animator>();
+        renderer = visual.GetComponent<SpriteRenderer>();
         state = States.idle;
         originalSprintTimer = 1f;
         walkSpeed = 4;
         rb = GetComponent<Rigidbody2D>();
+        SwitchToIdle();
     }
 
     // Update is called once per frame
@@ -43,7 +49,10 @@ public class PlayerController : MonoBehaviour
         //xdir = Input.GetAxis("Horizontal");
         xdir = ((99 * xdir) + Input.GetAxis("Horizontal")) / 100;
         ydir = Input.GetAxis("Vertical");
-
+        if (xdir < .001 && xdir > -.001)
+        {
+            xdir /*;*/ = 0;//;//;//;//;//;//;//;//;////////////////////////////////////////////////////////////////////////// 
+        }
         switch (state)
         {
             case States.idle:
@@ -58,31 +67,41 @@ public class PlayerController : MonoBehaviour
             case States.slide:
                 Slide();
                 break;
-            case States.jump:
+            /*
+             case States.jump:
                 Jump();
                 break;
             case States.fall:
                 Fall();
                 break;
+            */
         }
 
         if (Input.GetKeyDown("space"))
         {
-            SwitchToJump();
+            //SwitchToJump();
         }
         
-        Debug.Log("State is " + state.ToString());
+        //Debug.Log("State is " + state.ToString());
     }
 
     void SwitchToIdle()
     {
         Debug.Log("SwitchToIdle");
         state = States.idle;
+        animate.Play("Idle");
         //learn how animation yes
     }
 
     void Idle()
     {
+        if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || 
+             (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
+        {
+            Debug.Log("Idle to sprint");
+            SwitchToSprint();
+        }
+        //animate.Play("Idle");
         //one of the conditions for exiting idle state
         if (xdir != 0)
         {
@@ -90,13 +109,7 @@ public class PlayerController : MonoBehaviour
         }
 
         sprintTimer -= Time.deltaTime;
-        Debug.Log("sprintTimer is " + sprintTimer.ToString());
-        if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
-             (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
-        {
-            Debug.Log("I want to sprint :(");
-            SwitchToSprint();
-        }
+        //Debug.Log("sprintTimer is " + sprintTimer.ToString());
 
     }
 
@@ -106,23 +119,23 @@ public class PlayerController : MonoBehaviour
         sprintTimer = originalSprintTimer              /*;*/        ;
         state = States.walk;//;
         //animaation is yes
+        animate.Play("Walk");
     }
 
     void Walk()
     {
         Move();
         sprintTimer -= Time.deltaTime;
-        Debug.Log("sprintTimer is " + sprintTimer.ToString());
+        //Debug.Log("sprintTimer is " + sprintTimer.ToString());
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
-            Debug.Log("I want to sprint :(");
+            Debug.Log("Walk to sprint");
             SwitchToSprint();
         }
 
-        if (xdir < 0.001f && xdir > -0.001f)
+        if (xdir == 0)
         {
-            xdir = 0;
             SwitchToIdle();
         }
     }
@@ -139,6 +152,7 @@ public class PlayerController : MonoBehaviour
         Debug.Log("SwitchToSprint");
         //animaation hyeaaa
         state = States.sprint;
+        
     }
 
     void Sprint()
@@ -146,46 +160,54 @@ public class PlayerController : MonoBehaviour
         Move();
         Move();
 
-        if (xdir < 0.001f && xdir > -0.001f)
+        if (!Input.GetKeyDown(KeyCode.LeftArrow) || !Input.GetKeyDown(KeyCode.A) && xdir < 0) // if moving left and let go of button
         {
-            xdir = 0;
             SwitchToSlide();
         }
     }
-
+    
     void SwitchToSlide()
     {
         Debug.Log("SwitchToSlide");
         //animaation
         state = States.slide;
+        animate.Play("Slip");
     }
 
     void Slide()
     {
-        xvector *= 1 - (.01f * Time.deltaTime); // e?
+        //xvector *= 1 - (.01f * Time.deltaTime); // e?
+        //Pert
+        xvector = xvector * Mathf.Exp(-0.01f * Time.deltaTime);
         transform.position = transform.position + new Vector3(xvector, 0, 0);
-        if (xvector <= 0.01f)
+        if (xvector <= 0.01f && xvector > -0.01f)
         {
             SwitchToIdle();
         }
     }
-
+    /*
     void SwitchToJump()
     {
         Debug.Log("SwitchToJump");
         state = States.jump;
         rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
         //animaation
+        animate.Play("Jump");
     }
 
     void Jump()
     {
         Debug.Log("Jump");
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, 1f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, .04f);
         Debug.DrawRay(transform.position, Vector2.down, Color.red);
         if (canJump)
         {
             SwitchToIdle();
+        }
+
+        if (!canJump)
+        { 
+            SwitchToFall();
         }
         Move();
         //rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
@@ -194,8 +216,8 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToFall()
     {
-        
-        //animaation
+        Debug.Log("SwitchToFall");
+        animate.Play("Fall");
     }
 
     void Fall()
@@ -203,7 +225,7 @@ public class PlayerController : MonoBehaviour
         Move();
         //animaation
     }
-    
+    */
     
 //not using SwitchState but leaving for reconsideration later
    /* void SwitchState(States state)
