@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.Overlays;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
@@ -13,7 +14,8 @@ public class PlayerController : MonoBehaviour
         jump,
         fall,
         wallgrab,
-        slide
+        slide,
+        slidei
     }
 
     States state;
@@ -66,6 +68,9 @@ public class PlayerController : MonoBehaviour
                 break;
             case States.slide:
                 Slide();
+                break;
+            case States.slidei:
+                Slidei();
                 break;
             /*
              case States.jump:
@@ -160,10 +165,29 @@ public class PlayerController : MonoBehaviour
         Move();
         Move();
 
-        if (!Input.GetKeyDown(KeyCode.LeftArrow) || !Input.GetKeyDown(KeyCode.A) && xdir < 0) // if moving left and let go of button
+        if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.A) && xdir < 0) // if moving left and let go of button
         {
-            SwitchToSlide();
+            if (Input.GetKey(KeyCode.I))
+            {
+                SwitchToSlidei();
+            }
+            else
+            {
+                SwitchToSlide();
+            }
         }
+        if (!Input.GetKey(KeyCode.RightArrow) && !Input.GetKey(KeyCode.D) && xdir > 0) // if moving right and let go of button
+        {
+            if (Input.GetKey(KeyCode.I))
+            {
+                SwitchToSlidei();
+            }
+            else
+            {
+                SwitchToSlide();
+            }
+        }
+
     }
     
     void SwitchToSlide()
@@ -174,17 +198,38 @@ public class PlayerController : MonoBehaviour
         animate.Play("Slip");
     }
 
-    void Slide()
+    void SwitchToSlidei()
+    {
+        Debug.Log("SwitchToSlidei");
+        //animaation
+        state = States.slidei;
+        animate.Play("Slip");
+    }
+    
+    void Slidei()
     {
         //xvector *= 1 - (.01f * Time.deltaTime); // e?
         //Pert
-        xvector = xvector * Mathf.Exp(-0.01f * Time.deltaTime);
+        xvector *= Mathf.Exp(1 - (-0.0001f * Time.deltaTime));
         transform.position = transform.position + new Vector3(xvector, 0, 0);
         if (xvector <= 0.01f && xvector > -0.01f)
         {
             SwitchToIdle();
         }
     }
+    void Slide()
+    {
+        //xvector *= 1 - (.01f * Time.deltaTime); // e?
+        //Pert
+        xvector *= Mathf.Exp((-0.0000000001f * Time.deltaTime));
+        transform.position = transform.position + new Vector3(xvector, 0, 0);
+        Debug.Log(xvector);
+        if (xvector <= 0.01f && xvector > -0.01f)
+        {
+            SwitchToIdle();
+        }
+    }
+
     /*
     void SwitchToJump()
     {
@@ -206,7 +251,7 @@ public class PlayerController : MonoBehaviour
         }
 
         if (!canJump)
-        { 
+        {
             SwitchToFall();
         }
         Move();
