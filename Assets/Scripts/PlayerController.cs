@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Animator animate;
     private SpriteRenderer renderer;
     private GameObject visual;
+    private float landTimer;
 
     // Start is called before the first frame update
     void Start()
@@ -253,14 +254,16 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
         //animaation
         animate.Play("Fall");
+        landTimer = .1f;
     }
 
     void Jump() // Player is in this state when falling;;
     {
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.5f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
         Debug.DrawRay(transform.position, Vector2.down, Color.red);
         Move();
-        if (canJump)
+        landTimer -= Time.deltaTime;
+        if (canJump && landTimer < 0)
         {
             SwitchToIdle();
         }
@@ -269,17 +272,30 @@ public class PlayerController : MonoBehaviour
     
     void OnCollisionEnter2D(Collision2D other)
     {
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
         bool wallLeft = (xdir < 0 && Physics2D.Raycast(transform.position, Vector2.left, 1f));
         bool wallRight = (xdir > 0 && Physics2D.Raycast(transform.position, Vector2.right, 1f));
         if ((state == States.jump && !canJump && other.gameObject.CompareTag("Grass")) && (wallLeft || wallRight))
         {
             Debug.Log("SwitchtoWellGrab");
             rb.drag = 5;
-
             state = States.wallgrab;
             animate.Play("Cling");
 
+        }
+    }
+
+    void OnCollisionLeave2D(Collision2D other)
+    {
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
+        bool wallLeft = (xdir < 0 && Physics2D.Raycast(transform.position, Vector2.left, 1f));
+        bool wallRight = (xdir > 0 && Physics2D.Raycast(transform.position, Vector2.right, 1f));
+        if (!(state == States.jump && !canJump && other.gameObject.CompareTag("Grass")) && (wallLeft || wallRight))
+        {
+            rb.drag = 0;
+            state = States.jump;
+            animate.Play("Fall");
+            landTimer = .1f;
         }
     }
 
@@ -291,7 +307,7 @@ public class PlayerController : MonoBehaviour
             SwitchToJump();
         }
 
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
         if (canJump)
         {
             rb.drag = 0;
