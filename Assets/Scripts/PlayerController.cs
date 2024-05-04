@@ -25,6 +25,7 @@ public class PlayerController : MonoBehaviour
     private float xdir;
     private float ydir;
     private float xvector;
+    private float xps;
     private float yvector;
     public float forceAmount = 10f; // Jump Force
     [SerializeField] private Rigidbody2D rb;
@@ -147,7 +148,8 @@ public class PlayerController : MonoBehaviour
 
     void Move()
     {
-        xvector = xdir * walkSpeed * Time.deltaTime;
+        xps = xdir * walkSpeed;
+        xvector = xps * Time.deltaTime;
         transform.position = transform.position + new Vector3(xvector, 0, 0);
         
     }
@@ -219,12 +221,10 @@ public class PlayerController : MonoBehaviour
     }
     void Slide()
     {
-        //xvector *= 1 - (.01f * Time.deltaTime); // e?
-        //Pert
-        xvector *= Mathf.Exp((-0.0000000001f * Time.deltaTime));
+        xps *= Mathf.Exp(-2f * Time.deltaTime);
+        xvector = xps * Time.deltaTime;
         transform.position = transform.position + new Vector3(xvector, 0, 0);
-        Debug.Log(xvector);
-        if (xvector <= 0.01f && xvector > -0.01f)
+        if (xps <= 0.3f && xps >= -0.3f)
         {
             SwitchToIdle();
         }
