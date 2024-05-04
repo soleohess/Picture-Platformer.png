@@ -33,6 +33,7 @@ public class PlayerController : MonoBehaviour
     private Animator animate;
     private SpriteRenderer renderer;
     private GameObject visual;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -41,7 +42,7 @@ public class PlayerController : MonoBehaviour
         renderer = visual.GetComponent<SpriteRenderer>();
         state = States.idle;
         originalSprintTimer = 1f;
-        walkSpeed = 4;
+        walkSpeed = 6;
         rb = GetComponent<Rigidbody2D>();
         SwitchToIdle();
     }
@@ -73,14 +74,12 @@ public class PlayerController : MonoBehaviour
             case States.slidei:
                 Slidei();
                 break;
-            /*
-             case States.jump:
+            case States.jump:
                 Jump();
                 break;
-            case States.fall:
-                Fall();
+            case States.wallgrab:
+                WallGrab();
                 break;
-            */
         }
 
         if (Input.GetKeyDown("space"))
@@ -93,10 +92,12 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToIdle()
     {
-        Debug.Log("SwitchToIdle");
+        //Debug.Log("SwitchToIdle");
         state = States.idle;
         animate.Play("Idle");
         //learn how animation yes
+        xdir = 0;
+
     }
 
     void Idle()
@@ -104,7 +105,7 @@ public class PlayerController : MonoBehaviour
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || 
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
-            Debug.Log("Idle to sprint");
+            //Debug.Log("Idle to sprint");
             SwitchToSprint();
         }
         //animate.Play("Idle");
@@ -113,6 +114,7 @@ public class PlayerController : MonoBehaviour
         {
             SwitchToWalk();
         }
+        TryToJump();
 
         sprintTimer -= Time.deltaTime;
         //Debug.Log("sprintTimer is " + sprintTimer.ToString());
@@ -121,7 +123,7 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToWalk()
     {
-        Debug.Log("SwitchToWalk")   ;
+        //Debug.Log("SwitchToWalk")   ;
         sprintTimer = originalSprintTimer              /*;*/        ;
         state = States.walk;//;
         //animaation is yes
@@ -131,12 +133,13 @@ public class PlayerController : MonoBehaviour
     void Walk()
     {
         Move();
+        TryToJump();
         sprintTimer -= Time.deltaTime;
         //Debug.Log("sprintTimer is " + sprintTimer.ToString());
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
-            Debug.Log("Walk to sprint");
+           // Debug.Log("Walk to sprint");
             SwitchToSprint();
         }
 
@@ -156,7 +159,7 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToSprint()
     {
-        Debug.Log("SwitchToSprint");
+        //Debug.Log("SwitchToSprint");
         //animaation hyeaaa
         state = States.sprint;
         
@@ -167,6 +170,7 @@ public class PlayerController : MonoBehaviour
         Move();
         Move();
 
+        TryToJump();
         if (!Input.GetKey(KeyCode.LeftArrow) && !Input.GetKey(KeyCode.A) && xdir < 0) // if moving left and let go of button
         {
             if (Input.GetKey(KeyCode.I))
@@ -194,7 +198,7 @@ public class PlayerController : MonoBehaviour
     
     void SwitchToSlide()
     {
-        Debug.Log("SwitchToSlide");
+       // Debug.Log("SwitchToSlide");
         //animaation
         state = States.slide;
         animate.Play("Slip");
@@ -202,7 +206,7 @@ public class PlayerController : MonoBehaviour
 
     void SwitchToSlidei()
     {
-        Debug.Log("SwitchToSlidei");
+        //Debug.Log("SwitchToSlidei");
         //animaation
         state = States.slidei;
         animate.Play("Slip");
@@ -230,35 +234,71 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    /*
+    void TryToJump()
+    {
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
+        //Debug.Log("canJump is " + canJump);
+        Debug.DrawRay(transform.position, Vector2.down, Color.red);
+        if (canJump && Input.GetKeyDown(KeyCode.Space))
+        {
+            SwitchToJump();
+        }
+
+    }
+
     void SwitchToJump()
     {
-        Debug.Log("SwitchToJump");
+        //Debug.Log("SwitchToJump");
         state = States.jump;
         rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
         //animaation
-        animate.Play("Jump");
+        animate.Play("Fall");
     }
 
-    void Jump()
+    void Jump() // Player is in this state when falling;;
     {
-        Debug.Log("Jump");
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, .04f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.5f);
         Debug.DrawRay(transform.position, Vector2.down, Color.red);
+        Move();
         if (canJump)
         {
             SwitchToIdle();
         }
 
-        if (!canJump)
+    }
+    
+    void OnCollisionEnter2D(Collision2D other)
+    {
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
+        bool wallLeft = (xdir < 0 && Physics2D.Raycast(transform.position, Vector2.left, 1f));
+        bool wallRight = (xdir > 0 && Physics2D.Raycast(transform.position, Vector2.right, 1f));
+        if ((state == States.jump && !canJump && other.gameObject.CompareTag("Grass")) && (wallLeft || wallRight))
         {
-            SwitchToFall();
+            Debug.Log("SwitchtoWellGrab");
+            rb.drag = 5;
+
+            state = States.wallgrab;
+            animate.Play("Cling");
+
         }
-        Move();
-        //rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
-        //animaation
     }
 
+    void WallGrab()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            rb.drag = 0;
+            SwitchToJump();
+        }
+
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
+        if (canJump)
+        {
+            rb.drag = 0;
+            SwitchToIdle();
+        }
+    }
+    /*
     void SwitchToFall()
     {
         Debug.Log("SwitchToFall");
