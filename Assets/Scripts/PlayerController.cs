@@ -82,11 +82,6 @@ public class PlayerController : MonoBehaviour
                 WallGrab();
                 break;
         }
-
-        if (Input.GetKeyDown("space"))
-        {
-            //SwitchToJump();
-        }
         
         //Debug.Log("State is " + state.ToString());
     }
@@ -155,6 +150,15 @@ public class PlayerController : MonoBehaviour
         xps = xdir * walkSpeed;
         xvector = xps * Time.deltaTime;
         transform.position = transform.position + new Vector3(xvector, 0, 0);
+        /*if (xps < 0)
+        {
+            transform.rotation.z = 0f;
+        }
+
+        if (xps > 0)
+        {
+            
+        }8*/
         
     }
 
@@ -254,7 +258,7 @@ public class PlayerController : MonoBehaviour
         rb.AddForce(Vector2.up * forceAmount, ForceMode2D.Impulse);
         //animaation
         animate.Play("Fall");
-        landTimer = .1f;
+        landTimer = .03f;
     }
 
     void Jump() // Player is in this state when falling;;
