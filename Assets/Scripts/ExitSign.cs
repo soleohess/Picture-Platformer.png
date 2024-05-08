@@ -5,11 +5,15 @@ using UnityEngine.SceneManagement;
 
 public class ExitSign : MonoBehaviour
 {
-    public int nextscene;
+    
+    private HUD hud;
     // Start is called before the first frame update
     void Start()
     {
-        
+        hud = GameObject.FindObjectOfType<HUD>();
+        hud.timer = 60;
+        hud.coins = 0;
+        hud.health = 5;
     }
 
     // Update is called once per frame
@@ -21,8 +25,12 @@ public class ExitSign : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            nextscene++;
-            SceneManager.LoadScene(nextscene);
+            hud.nextscene++;
+            SceneManager.LoadScene(hud.nextscene);
         }
+    }
+    public void Reset()
+    {
+        SceneManager.LoadScene(hud.nextscene);
     }
 }

@@ -29,12 +29,16 @@ public class PlayerController : MonoBehaviour
     private float yvector;
     public float forceAmount = 10f; // Jump Force
     [SerializeField] private Rigidbody2D rb;
-    private bool canJump;
+    public bool canJump;
     private Animator animate;
     private SpriteRenderer renderer;
     private GameObject visual;
-    private float landTimer;
+    public float landTimer;
+    private float iFrames;
+    private HUD hud;
 
+    private RaycastHit hit;
+    //private transform boxPositon;
     // Start is called before the first frame update
     void Start()
     {
@@ -46,6 +50,9 @@ public class PlayerController : MonoBehaviour
         walkSpeed = 6;
         rb = GetComponent<Rigidbody2D>();
         SwitchToIdle();
+        iFrames = 0;
+        hud = GameObject.FindObjectOfType<HUD>();
+
     }
 
     // Update is called once per frame
@@ -83,6 +90,8 @@ public class PlayerController : MonoBehaviour
                 break;
         }
         
+        iFrames -= Time.deltaTime;
+
         //Debug.Log("State is " + state.ToString());
     }
 
@@ -263,7 +272,7 @@ public class PlayerController : MonoBehaviour
 
     void Jump() // Player is in this state when falling;;
     {
-        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
+        canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.51f);
         Debug.DrawRay(transform.position, Vector2.down, Color.red);
         Move();
         landTimer -= Time.deltaTime;
@@ -272,8 +281,28 @@ public class PlayerController : MonoBehaviour
             SwitchToIdle();
         }
 
+        /*if (Physics2D.Raycast(transform.position, Vector2.down, 0.51f), out hit)
+        {
+            if (hit.GameObject.CompareTag("Box")
+            {
+                hud.coins += 1;
+                boxPositon = hit.transform;
+                hit.destroy();
+                //instantiate(grass)
+            }
+        }*/
     }
     
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.CompareTag("Coin"))
+        {
+            hud.coins += 1;
+            Destroy(other.gameObject);
+        }
+    }
+
+        
     void OnCollisionEnter2D(Collision2D other)
     {
         canJump = Physics2D.Raycast(transform.position, Vector2.down, 0.500001f);
@@ -285,7 +314,11 @@ public class PlayerController : MonoBehaviour
             rb.drag = 5;
             state = States.wallgrab;
             animate.Play("Cling");
+        }
 
+        if (other.gameObject.CompareTag("Snail"))
+        {
+            hud.health -= 1;
         }
     }
 

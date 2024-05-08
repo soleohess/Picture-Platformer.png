@@ -22,6 +22,8 @@ public class LevelLoader : MonoBehaviour {
 		LoadMap();
 		GameObject mainCamera = GameObject.FindWithTag("MainCamera");
 		//mainCamera.Start();
+		HUD hud = GameObject.FindObjectOfType<HUD>();
+		hud.Start();
 	}
 
 	void Start()
