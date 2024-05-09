@@ -1,7 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using TMPro;
 public class HUD : MonoBehaviour
 {
     public static HUD hud;
@@ -13,7 +13,10 @@ public class HUD : MonoBehaviour
     public int coins;
     public int health;
     public float timer;
-    
+
+    public TextMeshProUGUI coinText;
+    public TextMeshProUGUI timerText;
+    public TextMeshProUGUI healthText;
     // Start is called before the first frame update
     public void Start()
     {
@@ -45,10 +48,10 @@ public class HUD : MonoBehaviour
             timer = 60;
             sign.Reset();
         }
-        /*if (Input.GetKeyDown(Keycode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
             sign.Reset();
-        }*/
+        }
         if (health <= 0)
         {
             coins = 0;
@@ -58,6 +61,10 @@ public class HUD : MonoBehaviour
         }
         
         timer -= Time.deltaTime;
+
+        coinText.text = "Coins: " + coins;
+        healthText.text = "Health: " + health;
+        timerText.text = "Timer: " + timer;
 
     }
 }
