@@ -172,3 +172,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   randomNumber: 0
+  coin: {fileID: 193220, guid: 4452304ede9b69b4db8ef1d677b45639, type: 3}

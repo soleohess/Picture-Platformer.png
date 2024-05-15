@@ -38,7 +38,7 @@ public class PlayerController : MonoBehaviour
     private HUD hud;
 
     private RaycastHit hit;
-    //private transform boxPositon;
+    private Vector3 boxPositon;
     // Start is called before the first frame update
     void Start()
     {
@@ -282,16 +282,18 @@ public class PlayerController : MonoBehaviour
             SwitchToIdle();
         }
 
-        /*if (Physics2D.Raycast(transform.position, Vector2.down, 0.51f), out hit)
+        RaycastHit hit;
+        if (Physics.Raycast())
+        if (Physics.Raycast(transform.position, Vector2.down, out hit, 0.51f))
         {
             if (hit.GameObject.CompareTag("Box")
             {
                 hud.coins += 1;
-                boxPositon = hit.transform;
+                boxPositon = hit.transform.position;
                 hit.destroy();
                 //instantiate(grass)
             }
-        }*/
+        }
     }
     
     void OnTriggerEnter2D(Collider2D other)

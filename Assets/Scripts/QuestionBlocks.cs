@@ -1,11 +1,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Mathematics;
 using UnityEngine;
 using Random = UnityEngine.Random;
 public class QuestionBlocks : MonoBehaviour
 {
-    [SerializeField] private float randomNumber;
+    [SerializeField] private int randomNumber;
+    public GameObject coin;
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -18,12 +21,13 @@ public class QuestionBlocks : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter(Collision other)
+    private void OnCollisionEnter2D(Collision2D other)
     {
-        randomNumber = Random.Range(0, 1);
+        Debug.Log("collision");
+        randomNumber = Random.Range(0, 10);
         if (randomNumber > 0)
         {
-            Instantiate(GameObject.FindWithTag("Coin"));
+            Instantiate(coin, new Vector3(0, 2, 0), quaternion.identity, GameObject.FindWithTag("TheLevel").transform);
         }
     }
 }
