@@ -8,6 +8,7 @@ public class QuestionBlocks : MonoBehaviour
 {
     [SerializeField] private int randomNumber;
     public GameObject coin;
+    public GameObject grass;
     
     // Start is called before the first frame update
     void Start()
@@ -21,13 +22,16 @@ public class QuestionBlocks : MonoBehaviour
         
     }
 
-    private void OnCollisionEnter2D(Collision2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log("collision");
-        randomNumber = Random.Range(0, 10);
-        if (randomNumber > 0)
+        if (other.gameObject.CompareTag("Player"))
         {
-            Instantiate(coin, new Vector3(0, 2, 0), quaternion.identity, GameObject.FindWithTag("TheLevel").transform);
+            Debug.Log("collision");
+            Instantiate(coin, gameObject.transform.parent.transform.position + new Vector3(0, 1, 0), quaternion.identity, GameObject.FindWithTag("TheLevel").transform);
+            Instantiate(grass, gameObject.transform.parent.transform.position, quaternion.identity, GameObject.FindWithTag("TheLevel").transform);
+            Destroy(gameObject.transform.parent.gameObject);
         }
+        
+        
     }
 }

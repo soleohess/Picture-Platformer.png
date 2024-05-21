@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 17343870}
   m_Layer: 0
   m_Name: The Level
-  m_TagString: Untagged
+  m_TagString: TheLevel
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -165,7 +165,7 @@ MonoBehaviour:
   - color:
       serializedVersion: 2
       rgba: 4278255615
-    prefab: {fileID: 193220, guid: 4452304ede9b69b4db8ef1d677b45639, type: 3}
+    prefab: {fileID: 193220, guid: 806df865f941744f9aa09910e4809385, type: 3}
   - color:
       serializedVersion: 2
       rgba: 4278255360

@@ -8,6 +8,8 @@ TagManager:
   - Snail
   - Coin
   - TheLevel
+  - Box
+  - Newton Coin
   layers:
   - Default
   - TransparentFX

@@ -107,12 +107,27 @@ public class PlayerController : MonoBehaviour
 
     void Idle()
     {
-        if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || 
+        /* if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 || 
              (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
         {
             //Debug.Log("Idle to sprint");
             SwitchToSprint();
         }
+        */
+        if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
+             (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0))
+        {
+            if (sprintTimer > 0)
+            {
+                // Debug.Log("Walk to sprint");
+                SwitchToSprint();
+            }
+            else
+            {
+                sprintTimer = originalSprintTimer;
+            }
+        }
+
         //animate.Play("Idle");
         //one of the conditions for exiting idle state
         if (xdir != 0)
@@ -142,10 +157,17 @@ public class PlayerController : MonoBehaviour
         sprintTimer -= Time.deltaTime;
         //Debug.Log("sprintTimer is " + sprintTimer.ToString());
         if (((Input.GetKeyDown(KeyCode.A) || Input.GetKeyDown(KeyCode.LeftArrow)) && xdir < 0 ||
-             (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0) && sprintTimer > 0)
+             (Input.GetKeyDown(KeyCode.D) || Input.GetKeyDown(KeyCode.RightArrow)) && xdir > 0))
         {
-           // Debug.Log("Walk to sprint");
-            SwitchToSprint();
+            if (sprintTimer > 0)
+            {
+                // Debug.Log("Walk to sprint");
+                SwitchToSprint();
+            }
+            else
+            {
+                sprintTimer = originalSprintTimer;
+            }
         }
 
         if (xdir == 0)
@@ -282,19 +304,17 @@ public class PlayerController : MonoBehaviour
             SwitchToIdle();
         }
 
-        RaycastHit hit;
-        if (Physics.Raycast())
-        if (Physics.Raycast(transform.position, Vector2.down, out hit, 0.51f))
-        {
-            if (hit.GameObject.CompareTag("Box")
+      /*  RaycastHit hit;
+        Physics.Raycast(transform.position, Vector2.up, out hit, 0.51f);
+        Debug.DrawRay(transform.position, Vector2.up, Color.blue);
+            if (hit.collider.gameObject.CompareTag("Box"))
             {
                 hud.coins += 1;
                 boxPositon = hit.transform.position;
-                hit.destroy();
+                Destroy(hit.collider.gameObject);
                 //instantiate(grass)
             }
-        }
-    }
+*/ }
     
     void OnTriggerEnter2D(Collider2D other)
     {
